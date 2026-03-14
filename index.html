@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Growth Portal</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f4;min-height:100vh;padding:0}
+:root{--bg:#ffffff;--bg2:#f5f5f4;--bg3:#f0efed;--text:#1a1a19;--text2:#6b6b68;--text3:#a09f9b;--border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.18);--green:#1D9E75;--green-bg:#E1F5EE;--green-text:#0F6E56;--blue:#185FA5;--blue-bg:#E6F1FB;--blue-text:#185FA5;--amber:#BA7517;--amber-bg:#FAEEDA;--amber-text:#854F0B;--red-bg:#FCEBEB;--red-text:#A32D2D;--purple-bg:#EEEDFE;--purple-text:#534AB7;--radius:8px;--radius-lg:12px}
+@media(prefers-color-scheme:dark){:root{--bg:#1c1c1a;--bg2:#242422;--bg3:#2c2c2a;--text:#f0efed;--text2:#a09f9b;--text3:#6b6b68;--border:rgba(255,255,255,0.1);--border2:rgba(255,255,255,0.18);--green-bg:rgba(29,158,117,0.15);--green-text:#5DCAA5;--blue-bg:rgba(24,95,165,0.15);--blue-text:#85B7EB;--amber-bg:rgba(186,117,23,0.15);--amber-text:#FAC775;--red-bg:rgba(163,45,45,0.15);--red-text:#F09595;--purple-bg:rgba(83,74,183,0.15);--purple-text:#AFA9EC}}
+.portal{background:var(--bg);min-height:100vh;display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:11px 20px;border-bottom:0.5px solid var(--border);background:var(--bg2);position:sticky;top:0;z-index:10}
+.tb-left{display:flex;align-items:center;gap:10px}
+.avatar{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:500;flex-shrink:0}
+.pulse-wrap{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)}
+.pulse{width:7px;height:7px;border-radius:50%;background:var(--green)}
+.portal-body{display:flex;flex:1}
+.sidebar{width:220px;min-width:220px;border-right:0.5px solid var(--border);padding:12px 0;background:var(--bg2);position:sticky;top:46px;height:calc(100vh - 46px);overflow-y:auto}
+.nav-group{padding:10px 16px 4px;font-size:10px;letter-spacing:.07em;color:var(--text3);text-transform:uppercase}
+.nav-item{display:flex;align-items:center;gap:9px;padding:7px 16px;cursor:pointer;font-size:13px;color:var(--text2);border-left:2px solid transparent;transition:background .1s,color .1s}
+.nav-item:hover{background:var(--bg);color:var(--text)}
+.nav-item.active{background:var(--bg);color:var(--text);border-left-color:var(--green);font-weight:500}
+.ni{font-size:12px;width:14px;text-align:center}
+.content{flex:1;padding:28px 32px;min-width:0;max-width:1100px}
+.section{display:none}.section.active{display:block}
+.sec-hd{margin-bottom:20px}
+.sec-title{font-size:20px;font-weight:500;color:var(--text);margin-bottom:4px}
+.sec-sub{font-size:14px;color:var(--text2)}
+.m-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:20px}
+.m-grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:20px}
+.mc{background:var(--bg2);border-radius:var(--radius);padding:14px 16px}
+.mc-label{font-size:11px;color:var(--text2);letter-spacing:.03em;margin-bottom:8px}
+.mc-value{font-size:24px;font-weight:500;color:var(--text);line-height:1}
+.mc-delta{font-size:12px;margin-top:6px}
+.up{color:var(--green)}.dn{color:var(--red-text)}
+.badge{display:inline-flex;align-items:center;font-size:11px;font-weight:500;padding:3px 9px;border-radius:20px;white-space:nowrap}
+.b-green{background:var(--green-bg);color:var(--green-text)}.b-amber{background:var(--amber-bg);color:var(--amber-text)}
+.b-blue{background:var(--blue-bg);color:var(--blue-text)}.b-red{background:var(--red-bg);color:var(--red-text)}
+.b-gray{background:var(--bg2);color:var(--text2);border:0.5px solid var(--border2)}.b-purple{background:var(--purple-bg);color:var(--purple-text)}
+.divider{height:0.5px;background:var(--border);margin:16px 0}
+.sec-label{font-size:10px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:10px}
+.two-col{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+.prog-row{margin-bottom:10px}
+.prog-label{display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;color:var(--text2)}
+.prog-bar{height:5px;background:var(--bg2);border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;background:var(--green);border-radius:3px}
+.dt{width:100%;border-collapse:collapse;font-size:13px}
+.dt th{text-align:left;padding:9px 12px;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--text2);border-bottom:0.5px solid var(--border);font-weight:500}
+.dt td{padding:11px 12px;border-bottom:0.5px solid var(--border);color:var(--text);vertical-align:middle}
+.dt tr:last-child td{border-bottom:none}
+.dt tr:hover td{background:var(--bg2)}
+.filter-tabs{display:flex;gap:4px;margin-bottom:16px;flex-wrap:wrap}
+.ftab{padding:5px 14px;border-radius:20px;font-size:12px;cursor:pointer;color:var(--text2);border:0.5px solid transparent}
+.ftab:hover{background:var(--bg2)}.ftab.active{background:var(--bg2);color:var(--text);border-color:var(--border2);font-weight:500}
+.timeline{position:relative;padding-left:28px}
+.timeline::before{content:'';position:absolute;left:8px;top:10px;bottom:10px;width:1px;background:var(--border)}
+.tl-item{position:relative;padding-bottom:24px}
+.tl-item:last-child{padding-bottom:0}
+.tl-dot{position:absolute;left:-28px;top:2px;width:17px;height:17px;border-radius:50%;border:1.5px solid var(--border2);background:var(--bg);display:flex;align-items:center;justify-content:center}
+.tl-dot.done{background:var(--green);border-color:var(--green)}.tl-dot.curr{border-color:#EF9F27}
+.tl-check{width:6px;height:6px;border-radius:50%;background:white}
+.tl-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tl-date{font-size:11px;color:var(--text3);margin-bottom:5px}
+.tl-body{font-size:12px;color:var(--text2);line-height:1.6}
+.tl-tasks{margin-top:9px;display:flex;flex-direction:column;gap:4px}
+.tl-task{font-size:12px;color:var(--text2);display:flex;align-items:center;gap:6px}
+.file-section{border:0.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px}
+.file-item{display:flex;align-items:center;gap:12px;padding:11px 15px;cursor:pointer}
+.file-item+.file-item{border-top:0.5px solid var(--border)}
+.file-item:hover{background:var(--bg2)}
+.ficon{width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;flex-shrink:0;letter-spacing:.02em}
+.fname{font-size:13px;font-weight:500;color:var(--text)}
+.fmeta{font-size:11px;color:var(--text2);margin-top:1px}
+.health-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:20px}
+.hcard{border:0.5px solid var(--border);border-radius:var(--radius);padding:12px 14px}
+.hdot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:6px}
+.hg{background:var(--green)}.ha{background:#EF9F27}
+.hcard-name{font-size:12px;font-weight:500;color:var(--text)}
+.hcard-val{font-size:11px;color:var(--text2);margin-top:3px}
+.team-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.team-card{display:flex;align-items:center;gap:12px;padding:13px 15px;border:0.5px solid var(--border);border-radius:var(--radius-lg)}
+.chart-wrap{background:var(--bg2);border-radius:var(--radius);padding:16px;margin-bottom:16px}
+.chart-title{font-size:11px;font-weight:500;color:var(--text2);letter-spacing:.04em;text-transform:uppercase;margin-bottom:14px}
+.plan-card{border:2px solid var(--green);border-radius:var(--radius-lg);padding:20px;margin-bottom:16px}
+.plan-feat{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--text2);margin-bottom:6px}
+.pri{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text2)}
+.pri-dot{width:7px;height:7px;border-radius:50%}
+.pri-h{background:#E24B4A}.pri-m{background:#EF9F27}.pri-l{background:var(--green)}
+.pipe-header{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;margin-bottom:14px;border:0.5px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.pipe-col-hd{padding:10px 12px;background:var(--bg2);font-size:11px;font-weight:500;color:var(--text2);letter-spacing:.04em;text-transform:uppercase;border-right:0.5px solid var(--border);text-align:center}
+.pipe-col-hd:last-child{border-right:none}
+.pipe-col-hd .pipe-count{font-size:16px;font-weight:500;color:var(--text);display:block;margin-top:3px;letter-spacing:0;text-transform:none}
+.pipe-board{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;align-items:start}
+.pipe-col{display:flex;flex-direction:column;gap:6px}
+.lead-card{border:0.5px solid var(--border);border-radius:var(--radius);padding:10px 12px;border-left-width:3px;background:var(--bg)}
+.lead-card.hot{border-left-color:#E24B4A}.lead-card.warm{border-left-color:#EF9F27}
+.lead-card.cool{border-left-color:var(--blue)}.lead-card.cold{border-left-color:var(--border)}
+.lead-card.won{border-left-color:var(--green)}
+.lc-name{font-size:12px;font-weight:500;color:var(--text);margin-bottom:2px}
+.lc-service{font-size:11px;color:var(--text2);margin-bottom:7px}
+.lc-meta{font-size:11px;color:var(--text3);display:flex;align-items:center;justify-content:space-between}
+.heat-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.hd-hot{background:#E24B4A}.hd-warm{background:#EF9F27}.hd-cool{background:var(--blue)}.hd-cold{background:var(--border2)}.hd-won{background:var(--green)}
+.spotlight-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:22px}
+.spotlight-card{border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:18px;position:relative;overflow:hidden}
+.spotlight-card.fire{border-color:#F09975}.spotlight-card.reactivated{border-color:#AFA9EC}.spotlight-card.closing{border-color:var(--green)}
+.sc-tag{font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+.sc-name{font-size:16px;font-weight:500;color:var(--text);margin-bottom:2px}
+.sc-service{font-size:12px;color:var(--text2);margin-bottom:13px}
+.sc-divider{height:0.5px;background:var(--border);margin-bottom:11px}
+.sc-row{display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px}
+.sc-row span:first-child{color:var(--text2)}.sc-row span:last-child{font-weight:500;color:var(--text)}
+.sc-action{margin-top:11px;font-size:12px;font-weight:500;padding:8px 12px;border-radius:var(--radius);text-align:center;cursor:pointer;border:0.5px solid var(--border2);color:var(--text)}
+.sc-action:hover{background:var(--bg2)}
+.score-bar-wrap{margin:9px 0}
+.score-bar-label{display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-bottom:4px}
+.score-bar{height:4px;background:var(--bg2);border-radius:2px;overflow:hidden}
+.seq-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:12px}
+.seq-table th{text-align:left;padding:7px 10px;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--text2);border-bottom:0.5px solid var(--border);font-weight:500}
+.seq-table td{padding:10px;border-bottom:0.5px solid var(--border);color:var(--text);vertical-align:middle}
+.seq-table tr:last-child td{border-bottom:none}
+.seq-table tr:hover td{background:var(--bg2)}
+</style>
+</head>
+<body>
+<div class="portal">
+  <div class="topbar">
+    <div class="tb-left">
+      <div class="avatar" style="width:32px;height:32px;font-size:12px;background:var(--green-bg);color:var(--green-text)">AH</div>
+      <div><div style="font-size:13px;font-weight:500;color:var(--text)">Acme HVAC</div><div style="font-size:11px;color:var(--text2)">AI growth portal</div></div>
+    </div>
+    <div class="pulse-wrap"><div class="pulse"></div>All systems operational · 9 of 10 automations live</div>
+    <div style="font-size:11px;color:var(--text3)">Mar 13, 2026 · Refreshed 2 min ago</div>
+  </div>
+  <div class="portal-body">
+    <div class="sidebar">
+      <div class="nav-group">Overview</div>
+      <div class="nav-item active" onclick="show(0)"><span class="ni">⊙</span>Project overview</div>
+      <div class="nav-item" onclick="show(1)"><span class="ni">◈</span>Lead spotlight</div>
+      <div class="nav-group" style="margin-top:6px">Pipeline</div>
+      <div class="nav-item" onclick="show(2)"><span class="ni">▦</span>Pipeline view</div>
+      <div class="nav-group" style="margin-top:6px">Performance</div>
+      <div class="nav-item" onclick="show(3)"><span class="ni">▤</span>KPI & analytics</div>
+      <div class="nav-item" onclick="show(4)"><span class="ni">✓</span>Onboarding & setup</div>
+      <div class="nav-group" style="margin-top:6px">Account</div>
+      <div class="nav-item" onclick="show(5)"><span class="ni">⊕</span>Requests</div>
+      <div class="nav-item" onclick="show(6)"><span class="ni">□</span>Resources</div>
+      <div class="nav-item" onclick="show(7)"><span class="ni">◎</span>Billing & account</div>
+    </div>
+    <div class="content">
+
+      <!-- PROJECT OVERVIEW -->
+      <div class="section active" id="s0">
+        <div class="sec-hd"><div class="sec-title">Project overview</div><div class="sec-sub">System health, monthly highlights, and your dedicated team</div></div>
+        <div class="m-grid">
+          <div class="mc"><div class="mc-label">Automations live</div><div class="mc-value">9<span style="font-size:14px;color:var(--text2)">/10</span></div><div class="mc-delta" style="color:var(--text2)">1 in setup</div></div>
+          <div class="mc"><div class="mc-label">Calls this month</div><div class="mc-value">312</div><div class="mc-delta up">↑ 18% vs Feb</div></div>
+          <div class="mc"><div class="mc-label">Revenue attributed</div><div class="mc-value">$18.4k</div><div class="mc-delta up">↑ 31% vs Feb</div></div>
+          <div class="mc"><div class="mc-label">No-show rate</div><div class="mc-value">4.1%</div><div class="mc-delta up">↓ from 11.3%</div></div>
+        </div>
+        <div class="sec-label">System health</div>
+        <div class="health-grid">
+          <div class="hcard"><div><span class="hdot hg"></span><span class="hcard-name">AI call reception</span></div><div class="hcard-val">312 calls · 99.8% uptime</div></div>
+          <div class="hcard"><div><span class="hdot hg"></span><span class="hcard-name">CRM integration</span></div><div class="hcard-val">ServiceTitan · syncing live</div></div>
+          <div class="hcard"><div><span class="hdot hg"></span><span class="hcard-name">Scheduling engine</span></div><div class="hcard-val">87 jobs booked this month</div></div>
+          <div class="hcard"><div><span class="hdot hg"></span><span class="hcard-name">Review automation</span></div><div class="hcard-val">34 new reviews · 4.8★ avg</div></div>
+          <div class="hcard"><div><span class="hdot hg"></span><span class="hcard-name">Lead reactivation</span></div><div class="hcard-val">22 leads re-engaged · 41% cvr</div></div>
+          <div class="hcard"><div><span class="hdot ha"></span><span class="hcard-name">Weather campaigns</span></div><div class="hcard-val">In setup · est. Mar 20</div></div>
+        </div>
+        <div class="sec-label">Your team</div>
+        <div class="team-grid">
+          <div class="team-card"><div class="avatar" style="width:38px;height:38px;font-size:13px;background:var(--blue-bg);color:var(--blue-text)">SC</div><div><div style="font-size:13px;font-weight:500;color:var(--text)">Sarah Chen</div><div style="font-size:12px;color:var(--text2)">Account manager</div><div style="font-size:11px;color:var(--text3);margin-top:2px">sarah@agency.com</div></div></div>
+          <div class="team-card"><div class="avatar" style="width:38px;height:38px;font-size:13px;background:var(--purple-bg);color:var(--purple-text)">MW</div><div><div style="font-size:13px;font-weight:500;color:var(--text)">Marcus Webb</div><div style="font-size:12px;color:var(--text2)">Technical lead</div><div style="font-size:11px;color:var(--text3);margin-top:2px">marcus@agency.com</div></div></div>
+        </div>
+        <div class="divider"></div>
+        <div style="border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;display:flex;align-items:flex-start;gap:12px">
+          <span class="badge b-amber" style="margin-top:1px;flex-shrink:0">In progress</span>
+          <div><div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px">Weather-triggered campaign buildout</div><div style="font-size:12px;color:var(--text2)">Configuring heat index and freeze-alert triggers for spring HVAC demand. 3 of 5 tasks complete. Estimated launch Mar 20.</div></div>
+        </div>
+      </div>
+
+      <!-- LEAD SPOTLIGHT -->
+      <div class="section" id="s1">
+        <div class="sec-hd"><div class="sec-title">Lead spotlight</div><div class="sec-sub">Your highest-value leads in play right now — curated daily by your AI system</div></div>
+        <div class="m-grid-3">
+          <div class="mc"><div class="mc-label">Hot leads (score 80+)</div><div class="mc-value">6</div><div class="mc-delta up">3 new since yesterday</div></div>
+          <div class="mc"><div class="mc-label">Dormant re-engaged</div><div class="mc-value">9</div><div class="mc-delta up">41% converting this month</div></div>
+          <div class="mc"><div class="mc-label">Est. pipeline value</div><div class="mc-value">$34.2k</div><div class="mc-delta" style="color:var(--text2)">across 22 active leads</div></div>
+        </div>
+        <div class="sec-label">Top leads — act now</div>
+        <div class="spotlight-grid">
+          <div class="spotlight-card fire">
+            <div class="sc-tag" style="color:#993C1D">Hottest lead</div>
+            <div class="sc-name">Sandra K.</div>
+            <div class="sc-service">Emergency AC replacement · Est. $4,800</div>
+            <div class="score-bar-wrap"><div class="score-bar-label"><span>Lead score</span><span style="font-weight:500;color:#E24B4A">94 / 100</span></div><div class="score-bar"><div style="height:100%;width:94%;background:#E24B4A;border-radius:2px"></div></div></div>
+            <div class="sc-divider"></div>
+            <div class="sc-row"><span>Source</span><span>After-hours AI call</span></div>
+            <div class="sc-row"><span>Stage</span><span>Quote sent</span></div>
+            <div class="sc-row"><span>Last touch</span><span>2 hrs ago</span></div>
+            <div class="sc-row"><span>Next action</span><span style="color:#E24B4A">Follow up today</span></div>
+            <div class="sc-action">View in CRM →</div>
+          </div>
+          <div class="spotlight-card reactivated">
+            <div class="sc-tag" style="color:#534AB7">Reactivated</div>
+            <div class="sc-name">Carl M.</div>
+            <div class="sc-service">Furnace tune-up + filter replacement · Est. $380</div>
+            <div class="score-bar-wrap"><div class="score-bar-label"><span>Lead score</span><span style="font-weight:500;color:#534AB7">78 / 100</span></div><div class="score-bar"><div style="height:100%;width:78%;background:#534AB7;border-radius:2px"></div></div></div>
+            <div class="sc-divider"></div>
+            <div class="sc-row"><span>Dormant for</span><span>87 days</span></div>
+            <div class="sc-row"><span>Re-engaged via</span><span>Touch #4 sequence</span></div>
+            <div class="sc-row"><span>Replied</span><span>1 hr ago</span></div>
+            <div class="sc-row"><span>Next action</span><span style="color:#534AB7">Book appointment</span></div>
+            <div class="sc-action">Book appointment →</div>
+          </div>
+          <div class="spotlight-card closing">
+            <div class="sc-tag" style="color:var(--green-text)">About to close</div>
+            <div class="sc-name">Priya S.</div>
+            <div class="sc-service">Annual maintenance plan · Est. $699/yr</div>
+            <div class="score-bar-wrap"><div class="score-bar-label"><span>Lead score</span><span style="font-weight:500;color:var(--green)">88 / 100</span></div><div class="score-bar"><div style="height:100%;width:88%;background:var(--green);border-radius:2px"></div></div></div>
+            <div class="sc-divider"></div>
+            <div class="sc-row"><span>Source</span><span>Outbound AI — web form</span></div>
+            <div class="sc-row"><span>Stage</span><span>Proposal accepted</span></div>
+            <div class="sc-row"><span>Contacted in</span><span>58 seconds</span></div>
+            <div class="sc-row"><span>Next action</span><span style="color:var(--green)">Send contract</span></div>
+            <div class="sc-action">Send contract →</div>
+          </div>
+        </div>
+        <div class="sec-label">All active leads in sequences</div>
+        <table class="seq-table">
+          <thead><tr><th>Name</th><th>Service</th><th>Sequence</th><th>Touch</th><th>Score</th><th>Est. value</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td style="font-weight:500">Sandra K.</td><td>AC replacement</td><td>Inbound follow-up</td><td>2 / 5</td><td style="color:#E24B4A;font-weight:500">94</td><td>$4,800</td><td><span class="badge b-red">Hot</span></td></tr>
+            <tr><td style="font-weight:500">Priya S.</td><td>Maintenance plan</td><td>Outbound new lead</td><td>3 / 5</td><td style="color:var(--green);font-weight:500">88</td><td>$699</td><td><span class="badge b-green">Closing</span></td></tr>
+            <tr><td style="font-weight:500">Carl M.</td><td>Furnace tune-up</td><td>Reactivation 7-touch</td><td>4 / 7</td><td style="color:#534AB7;font-weight:500">78</td><td>$380</td><td><span class="badge b-purple">Warm</span></td></tr>
+            <tr><td style="font-weight:500">David T.</td><td>Duct cleaning</td><td>Nurture sequence</td><td>2 / 5</td><td style="color:var(--amber);font-weight:500">61</td><td>$290</td><td><span class="badge b-amber">Nurturing</span></td></tr>
+            <tr><td style="font-weight:500">Karen L.</td><td>AC install</td><td>Reactivation 7-touch</td><td>1 / 7</td><td style="color:var(--amber);font-weight:500">55</td><td>$6,200</td><td><span class="badge b-amber">Nurturing</span></td></tr>
+            <tr><td style="font-weight:500">Bob R.</td><td>Maintenance plan</td><td>Post-service upsell</td><td>3 / 4</td><td style="color:var(--green);font-weight:500">82</td><td>$349</td><td><span class="badge b-green">Closing</span></td></tr>
+            <tr><td style="font-weight:500">Maria T.</td><td>System replacement</td><td>Reactivation 7-touch</td><td>6 / 7</td><td style="color:#E24B4A;font-weight:500">91</td><td>$8,400</td><td><span class="badge b-red">Hot</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- PIPELINE VIEW -->
+      <div class="section" id="s2">
+        <div class="sec-hd"><div class="sec-title">Pipeline view</div><div class="sec-sub">Every active lead across all sequences — where they are and what's next</div></div>
+        <div class="m-grid">
+          <div class="mc"><div class="mc-label">Total in pipeline</div><div class="mc-value">38</div><div class="mc-delta" style="color:var(--text2)">active leads</div></div>
+          <div class="mc"><div class="mc-label">Est. pipeline value</div><div class="mc-value">$34.2k</div><div class="mc-delta up">↑ 22% vs Feb</div></div>
+          <div class="mc"><div class="mc-label">Avg lead score</div><div class="mc-value">67</div><div class="mc-delta up">↑ from 54 last month</div></div>
+          <div class="mc"><div class="mc-label">Closing this week</div><div class="mc-value">5</div><div class="mc-delta up">Est. $11.4k</div></div>
+        </div>
+        <div class="filter-tabs">
+          <div class="ftab active" onclick="filterPipe('all',this)">All sequences</div>
+          <div class="ftab" onclick="filterPipe('inbound',this)">Inbound</div>
+          <div class="ftab" onclick="filterPipe('reactivation',this)">Reactivation</div>
+          <div class="ftab" onclick="filterPipe('nurture',this)">Nurture</div>
+          <div class="ftab" onclick="filterPipe('upsell',this)">Upsell</div>
+        </div>
+        <div class="pipe-header">
+          <div class="pipe-col-hd">New lead<span class="pipe-count">8</span></div>
+          <div class="pipe-col-hd">Contacted<span class="pipe-count">11</span></div>
+          <div class="pipe-col-hd">Engaged<span class="pipe-count">9</span></div>
+          <div class="pipe-col-hd">Quote / proposal<span class="pipe-count">6</span></div>
+          <div class="pipe-col-hd">Closing<span class="pipe-count">4</span></div>
+        </div>
+        <div class="pipe-board" id="pipeBoard">
+          <div class="pipe-col">
+            <div class="lead-card warm" data-seq="inbound"><div class="lc-name">James H.</div><div class="lc-service">AC tune-up</div><div class="lc-meta"><span>Inbound · 3 hrs ago</span><div class="heat-dot hd-warm"></div></div></div>
+            <div class="lead-card cold" data-seq="reactivation"><div class="lc-name">Linda P.</div><div class="lc-service">Filter replacement</div><div class="lc-meta"><span>Reactivation · Day 1</span><div class="heat-dot hd-cold"></div></div></div>
+            <div class="lead-card warm" data-seq="nurture"><div class="lc-name">Tom W.</div><div class="lc-service">Duct inspection</div><div class="lc-meta"><span>Web form · 6 hrs ago</span><div class="heat-dot hd-warm"></div></div></div>
+            <div class="lead-card cold" data-seq="upsell"><div class="lc-name">Ann C.</div><div class="lc-service">Maintenance plan</div><div class="lc-meta"><span>Post-service · Day 1</span><div class="heat-dot hd-cold"></div></div></div>
+          </div>
+          <div class="pipe-col">
+            <div class="lead-card warm" data-seq="inbound"><div class="lc-name">Priya S.</div><div class="lc-service">Outbound new lead</div><div class="lc-meta"><span>Contacted &lt;60s</span><div class="heat-dot hd-warm"></div></div></div>
+            <div class="lead-card cool" data-seq="reactivation"><div class="lc-name">Carl M.</div><div class="lc-service">Furnace tune-up</div><div class="lc-meta"><span>Touch 4 / 7</span><div class="heat-dot hd-cool"></div></div></div>
+            <div class="lead-card cool" data-seq="nurture"><div class="lc-name">David T.</div><div class="lc-service">Duct cleaning</div><div class="lc-meta"><span>Touch 2 / 5</span><div class="heat-dot hd-cool"></div></div></div>
+            <div class="lead-card cold" data-seq="reactivation"><div class="lc-name">Karen L.</div><div class="lc-service">AC install · $6.2k</div><div class="lc-meta"><span>Touch 1 / 7</span><div class="heat-dot hd-cold"></div></div></div>
+          </div>
+          <div class="pipe-col">
+            <div class="lead-card warm" data-seq="reactivation"><div class="lc-name">Maria T.</div><div class="lc-service">System replacement</div><div class="lc-meta"><span>Touch 6 / 7</span><div class="heat-dot hd-warm"></div></div></div>
+            <div class="lead-card warm" data-seq="nurture"><div class="lc-name">Ray B.</div><div class="lc-service">AC service</div><div class="lc-meta"><span>Touch 3 / 5</span><div class="heat-dot hd-warm"></div></div></div>
+            <div class="lead-card cool" data-seq="inbound"><div class="lc-name">Susan G.</div><div class="lc-service">Heat pump check</div><div class="lc-meta"><span>2nd follow-up sent</span><div class="heat-dot hd-cool"></div></div></div>
+          </div>
+          <div class="pipe-col">
+            <div class="lead-card hot" data-seq="inbound"><div class="lc-name">Sandra K.</div><div class="lc-service">AC replacement · $4.8k</div><div class="lc-meta"><span>Quote sent 2hr ago</span><div class="heat-dot hd-hot"></div></div></div>
+            <div class="lead-card warm" data-seq="reactivation"><div class="lc-name">Greg N.</div><div class="lc-service">Furnace install · $3.1k</div><div class="lc-meta"><span>Awaiting response</span><div class="heat-dot hd-warm"></div></div></div>
+            <div class="lead-card hot" data-seq="inbound"><div class="lc-name">Maria T.</div><div class="lc-service">Sys. replace · $8.4k</div><div class="lc-meta"><span>Score 91 · Act fast</span><div class="heat-dot hd-hot"></div></div></div>
+          </div>
+          <div class="pipe-col">
+            <div class="lead-card won" data-seq="inbound"><div class="lc-name">Priya S.</div><div class="lc-service">Maint. plan · $699</div><div class="lc-meta"><span>Contract pending</span><div class="heat-dot hd-won"></div></div></div>
+            <div class="lead-card won" data-seq="upsell"><div class="lc-name">Bob R.</div><div class="lc-service">Maint. plan · $349</div><div class="lc-meta"><span>Payment pending</span><div class="heat-dot hd-won"></div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI & ANALYTICS -->
+      <div class="section" id="s3">
+        <div class="sec-hd"><div class="sec-title">KPI & analytics</div><div class="sec-sub">Performance metrics with month-over-month comparisons — updated weekly</div></div>
+        <div class="m-grid">
+          <div class="mc"><div class="mc-label">Calls answered (MTD)</div><div class="mc-value">312</div><div class="mc-delta up">↑ 18% vs Feb</div></div>
+          <div class="mc"><div class="mc-label">Jobs booked</div><div class="mc-value">87</div><div class="mc-delta up">↑ 24% vs Feb</div></div>
+          <div class="mc"><div class="mc-label">No-show rate</div><div class="mc-value">4.1%</div><div class="mc-delta up">↓ 64% from baseline</div></div>
+          <div class="mc"><div class="mc-label">Revenue attributed</div><div class="mc-value">$18.4k</div><div class="mc-delta up">↑ 31% vs Feb</div></div>
+        </div>
+        <div class="chart-wrap"><div class="chart-title">Weekly call volume & bookings — Jan through Mar 2026</div><div style="position:relative;height:200px"><canvas id="kpiChart"></canvas></div></div>
+        <div class="two-col">
+          <div>
+            <div class="sec-label">Conversion funnel (MTD)</div>
+            <div class="prog-row"><div class="prog-label"><span>Calls answered</span><span style="font-weight:500;color:var(--text)">312</span></div><div class="prog-bar"><div class="prog-fill" style="width:100%"></div></div></div>
+            <div class="prog-row"><div class="prog-label"><span>Qualified leads</span><span style="font-weight:500;color:var(--text)">198 (63%)</span></div><div class="prog-bar"><div class="prog-fill" style="width:63%"></div></div></div>
+            <div class="prog-row"><div class="prog-label"><span>Booked</span><span style="font-weight:500;color:var(--text)">87 (44%)</span></div><div class="prog-bar"><div class="prog-fill" style="width:44%"></div></div></div>
+            <div class="prog-row"><div class="prog-label"><span>Jobs completed</span><span style="font-weight:500;color:var(--text)">79 (91%)</span></div><div class="prog-bar"><div class="prog-fill" style="width:40%"></div></div></div>
+            <div class="prog-row"><div class="prog-label"><span>Upsells / repeat</span><span style="font-weight:500;color:var(--text)">8 (10%)</span></div><div class="prog-bar"><div class="prog-fill" style="width:10%"></div></div></div>
+            <div class="divider"></div>
+            <div style="font-size:11px;color:var(--text2);margin-bottom:5px">New Google reviews (MTD)</div>
+            <div style="display:flex;align-items:center;gap:6px"><span style="font-size:22px;font-weight:500;color:var(--text)">34</span><span style="font-size:13px;color:var(--amber)">4.8★ avg · ↑ from 4.2★</span></div>
+          </div>
+          <div>
+            <div class="sec-label">Revenue by source (MTD)</div>
+            <div style="position:relative;height:220px"><canvas id="revChart"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ONBOARDING -->
+      <div class="section" id="s4">
+        <div class="sec-hd"><div class="sec-title">Onboarding & setup</div><div class="sec-sub">Live implementation progress — every phase and task tracked</div></div>
+        <div class="m-grid-3">
+          <div class="mc"><div class="mc-label">Overall progress</div><div class="mc-value">78%</div><div style="margin-top:8px"><div class="prog-bar"><div class="prog-fill" style="width:78%"></div></div></div></div>
+          <div class="mc"><div class="mc-label">Phases complete</div><div class="mc-value">3<span style="font-size:14px;color:var(--text2)">/5</span></div><div class="mc-delta up">On track</div></div>
+          <div class="mc"><div class="mc-label">Next milestone</div><div class="mc-value" style="font-size:15px;margin-top:4px">Weather launch</div><div class="mc-delta" style="color:var(--text2)">Est. Mar 20</div></div>
+        </div>
+        <div class="timeline">
+          <div class="tl-item"><div class="tl-dot done"><div class="tl-check"></div></div><div class="tl-title">Phase 1 — Discovery & intake <span class="badge b-green">Complete</span></div><div class="tl-date">Completed Jan 8 · Sarah Chen</div><div class="tl-body">Onboarding call, ICP definition, CRM audit, brand voice documentation, service area mapping.</div></div>
+          <div class="tl-item"><div class="tl-dot done"><div class="tl-check"></div></div><div class="tl-title">Phase 2 — CRM & phone integration <span class="badge b-green">Complete</span></div><div class="tl-date">Completed Jan 12 · Marcus Webb</div><div class="tl-body">ServiceTitan API connected, call routing configured, field mapping validated, end-to-end test data verified.</div></div>
+          <div class="tl-item"><div class="tl-dot done"><div class="tl-check"></div></div><div class="tl-title">Phase 3 — AI voice & script build <span class="badge b-green">Complete</span></div><div class="tl-date">Completed Jan 14 · Marcus Webb</div><div class="tl-body">Call script v3.1 approved, AI voice trained on brand tone, qualification logic tested across 40+ scenarios.</div></div>
+          <div class="tl-item"><div class="tl-dot curr"></div><div class="tl-title">Phase 4 — Automation buildout <span class="badge b-amber">In progress</span></div><div class="tl-date">Started Feb 1 · Est. complete Mar 20</div><div class="tl-body">8 of 10 automations fully live. Final 2 in active configuration.</div><div class="tl-tasks"><div class="tl-task"><span style="color:var(--green)">✓</span>No-show prevention live</div><div class="tl-task"><span style="color:var(--green)">✓</span>Review automation live</div><div class="tl-task"><span style="color:var(--green)">✓</span>Lead reactivation (7-touch) live</div><div class="tl-task"><span style="color:#EF9F27">→</span>Weather campaign triggers — 3 of 5 tasks done</div></div></div>
+          <div class="tl-item"><div class="tl-dot"></div><div class="tl-title">Phase 5 — Reporting & optimization <span class="badge b-gray">Upcoming</span></div><div class="tl-date">Starts Mar 25 · Scheduled</div><div class="tl-body">Full KPI dashboard, 30-day performance review, A/B test results, Q2 optimization roadmap.</div></div>
+        </div>
+      </div>
+
+      <!-- REQUESTS -->
+      <div class="section" id="s5">
+        <div class="sec-hd"><div class="sec-title">Requests & enhancements</div><div class="sec-sub">All requests tracked with priority and owner. SLA: 1 business day triage.</div></div>
+        <table class="dt">
+          <thead><tr><th>#</th><th>Request</th><th>Priority</th><th>Status</th><th>Submitted</th><th>Owner</th></tr></thead>
+          <tbody>
+            <tr><td style="font-size:12px;color:var(--text3)">#1031</td><td><div style="font-size:13px;font-weight:500">Spring campaign copy</div><div style="font-size:11px;color:var(--text2)">New AC season messaging for outreach sequences</div></td><td><div class="pri"><div class="pri-dot pri-h"></div>High</div></td><td><span class="badge b-amber">In progress</span></td><td style="font-size:12px;color:var(--text2)">Mar 11</td><td style="font-size:12px;color:var(--text2)">Marcus</td></tr>
+            <tr><td style="font-size:12px;color:var(--text3)">#1028</td><td><div style="font-size:13px;font-weight:500">Adjust review timing</div><div style="font-size:11px;color:var(--text2)">Send 4hr post-job close instead of 24hr</div></td><td><div class="pri"><div class="pri-dot pri-m"></div>Medium</div></td><td><span class="badge b-blue">Queued</span></td><td style="font-size:12px;color:var(--text2)">Mar 8</td><td style="font-size:12px;color:var(--text2)">Sarah</td></tr>
+            <tr><td style="font-size:12px;color:var(--text3)">#1024</td><td><div style="font-size:13px;font-weight:500">Emergency call routing</div><div style="font-size:11px;color:var(--text2)">After-hours escalation to on-call technician</div></td><td><div class="pri"><div class="pri-dot pri-h"></div>High</div></td><td><span class="badge b-green">Done</span></td><td style="font-size:12px;color:var(--text2)">Mar 3</td><td style="font-size:12px;color:var(--text2)">Marcus</td></tr>
+            <tr><td style="font-size:12px;color:var(--text3)">#1019</td><td><div style="font-size:13px;font-weight:500">Spanish language routing</div><div style="font-size:11px;color:var(--text2)">Bilingual AI receptionist for Spanish-speaking callers</div></td><td><div class="pri"><div class="pri-dot pri-m"></div>Medium</div></td><td><span class="badge b-gray">Backlog</span></td><td style="font-size:12px;color:var(--text2)">Feb 22</td><td style="font-size:12px;color:var(--text2)">Unassigned</td></tr>
+            <tr><td style="font-size:12px;color:var(--text3)">#1014</td><td><div style="font-size:13px;font-weight:500">7-touch reactivation</div><div style="font-size:11px;color:var(--text2)">Expanded from 5-touch sequence</div></td><td><div class="pri"><div class="pri-dot pri-l"></div>Low</div></td><td><span class="badge b-green">Done</span></td><td style="font-size:12px;color:var(--text2)">Feb 14</td><td style="font-size:12px;color:var(--text2)">Marcus</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- RESOURCES -->
+      <div class="section" id="s6">
+        <div class="sec-hd"><div class="sec-title">Resources & documents</div><div class="sec-sub">Contracts, scripts, playbooks, and brand assets — versioned and organized</div></div>
+        <div class="sec-label">Contracts & legal</div>
+        <div class="file-section">
+          <div class="file-item"><div class="ficon" style="background:var(--blue-bg);color:var(--blue-text)">PDF</div><div style="flex:1"><div class="fname">Master service agreement</div><div class="fmeta">Signed Jan 10, 2026</div></div><span class="badge b-green">Signed</span></div>
+          <div class="file-item"><div class="ficon" style="background:var(--blue-bg);color:var(--blue-text)">PDF</div><div style="flex:1"><div class="fname">Data processing addendum (DPA)</div><div class="fmeta">Signed Jan 10, 2026</div></div><span class="badge b-green">Signed</span></div>
+        </div>
+        <div class="sec-label">Call scripts & outreach copy</div>
+        <div class="file-section">
+          <div class="file-item"><div class="ficon" style="background:var(--purple-bg);color:var(--purple-text)">DOC</div><div style="flex:1"><div class="fname">AI inbound call script</div><div class="fmeta">v3.1 · Approved Feb 8</div></div><span class="badge b-blue">Current</span></div>
+          <div class="file-item"><div class="ficon" style="background:var(--purple-bg);color:var(--purple-text)">DOC</div><div style="flex:1"><div class="fname">Dormant lead reactivation — 7 touches</div><div class="fmeta">v2.0 · Approved Mar 1</div></div><span class="badge b-blue">Current</span></div>
+          <div class="file-item"><div class="ficon" style="background:var(--purple-bg);color:var(--purple-text)">DOC</div><div style="flex:1"><div class="fname">Post-service upsell sequences</div><div class="fmeta">v1.2 · Approved Jan 28</div></div><span class="badge b-blue">Current</span></div>
+          <div class="file-item"><div class="ficon" style="background:var(--purple-bg);color:var(--purple-text)">DOC</div><div style="flex:1"><div class="fname">Spring weather campaign copy (draft)</div><div class="fmeta">v0.4 · Pending approval</div></div><span class="badge b-amber">Draft</span></div>
+        </div>
+        <div class="sec-label">Technical & brand</div>
+        <div class="file-section">
+          <div class="file-item"><div class="ficon" style="background:var(--amber-bg);color:var(--amber-text)">DOC</div><div style="flex:1"><div class="fname">CRM integration guide — ServiceTitan</div><div class="fmeta">Field mapping, job types, sync frequency</div></div></div>
+          <div class="file-item"><div class="ficon" style="background:var(--amber-bg);color:var(--amber-text)">DOC</div><div style="flex:1"><div class="fname">Brand voice & tone guidelines</div><div class="fmeta">Used across all AI-generated outreach</div></div></div>
+        </div>
+      </div>
+
+      <!-- BILLING -->
+      <div class="section" id="s7">
+        <div class="sec-hd"><div class="sec-title">Billing & account</div><div class="sec-sub">Your plan, included services, and full invoice history</div></div>
+        <div class="plan-card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">
+            <div><div style="font-size:14px;font-weight:500;color:var(--text)">Growth Pro</div><div style="font-size:28px;font-weight:500;color:var(--text);margin:6px 0">$2,500<span style="font-size:14px;font-weight:400;color:var(--text2)">/mo</span></div><div style="font-size:12px;color:var(--text2)">Renews Apr 1, 2026 · Auto-renews monthly</div></div>
+            <span class="badge b-green" style="margin-top:4px">Active</span>
+          </div>
+          <div class="divider" style="margin:12px 0"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px">
+            <div class="plan-feat"><span style="color:var(--green);font-size:12px">✓</span>Unlimited AI inbound calls</div>
+            <div class="plan-feat"><span style="color:var(--green);font-size:12px">✓</span>All 10 automations included</div>
+            <div class="plan-feat"><span style="color:var(--green);font-size:12px">✓</span>CRM integration + support</div>
+            <div class="plan-feat"><span style="color:var(--green);font-size:12px">✓</span>Monthly performance report</div>
+            <div class="plan-feat"><span style="color:var(--green);font-size:12px">✓</span>Dedicated account manager</div>
+            <div class="plan-feat"><span style="color:var(--green);font-size:12px">✓</span>Priority request queue</div>
+          </div>
+        </div>
+        <div class="sec-label">Invoice history</div>
+        <table class="dt">
+          <thead><tr><th>Invoice</th><th>Period</th><th>Amount</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+            <tr><td style="font-size:12px;color:var(--text3)">#1024</td><td style="font-size:12px;color:var(--text2)">Mar 1 – Mar 31, 2026</td><td style="font-weight:500">$2,500</td><td><span class="badge b-green">Paid</span></td><td style="font-size:12px;color:var(--blue);cursor:pointer">Download</td></tr>
+            <tr><td style="font-size:12px;color:var(--text3)">#1018</td><td style="font-size:12px;color:var(--text2)">Feb 1 – Feb 28, 2026</td><td style="font-weight:500">$2,500</td><td><span class="badge b-green">Paid</span></td><td style="font-size:12px;color:var(--blue);cursor:pointer">Download</td></tr>
+            <tr><td style="font-size:12px;color:var(--text3)">#1009</td><td style="font-size:12px;color:var(--text2)">Jan 1 – Jan 31, 2026</td><td style="font-weight:500">$2,500</td><td><span class="badge b-green">Paid</span></td><td style="font-size:12px;color:var(--blue);cursor:pointer">Download</td></tr>
+          </tbody>
+        </table>
+        <div class="divider"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;color:var(--text2)">Questions about billing?</span><span style="font-size:13px;color:var(--blue);cursor:pointer">sarah@agency.com</span></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+function show(i){
+  document.querySelectorAll('.section').forEach((s,j)=>s.classList.toggle('active',i===j));
+  document.querySelectorAll('.nav-item').forEach((n,j)=>n.classList.toggle('active',i===j));
+  if(i===3)setTimeout(initCharts,80);
+}
+function filterPipe(type,el){
+  document.querySelectorAll('.ftab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.lead-card').forEach(c=>{
+    c.style.display=(type==='all'||c.dataset.seq===type)?'block':'none';
+  });
+}
+let charted=false;
+function initCharts(){
+  if(charted||typeof Chart==='undefined')return;
+  charted=true;
+  const dk=window.matchMedia('(prefers-color-scheme:dark)').matches;
+  const tc=dk?'rgba(255,255,255,0.5)':'rgba(0,0,0,0.5)';
+  const gc=dk?'rgba(255,255,255,0.07)':'rgba(0,0,0,0.07)';
+  const weeks=['Jan W1','Jan W2','Jan W3','Jan W4','Feb W1','Feb W2','Feb W3','Feb W4','Mar W1','Mar W2'];
+  new Chart(document.getElementById('kpiChart'),{type:'line',data:{labels:weeks,datasets:[
+    {label:'Calls answered',data:[54,61,58,67,72,78,74,81,88,93],borderColor:'#1D9E75',backgroundColor:dk?'rgba(29,158,117,0.15)':'rgba(29,158,117,0.08)',borderWidth:1.5,pointRadius:3,pointBackgroundColor:'#1D9E75',tension:0.4,fill:true},
+    {label:'Jobs booked',data:[14,18,16,22,24,27,25,29,34,38],borderColor:'#185FA5',backgroundColor:dk?'rgba(24,95,165,0.15)':'rgba(24,95,165,0.07)',borderWidth:1.5,pointRadius:3,pointBackgroundColor:'#185FA5',tension:0.4,fill:true}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:tc,font:{size:12},boxWidth:10,padding:14}}},scales:{x:{ticks:{color:tc,font:{size:11}},grid:{color:gc}},y:{ticks:{color:tc,font:{size:11}},grid:{color:gc}}}}});
+  new Chart(document.getElementById('revChart'),{type:'doughnut',data:{labels:['Inbound calls','Dormant reactivation','Post-service upsells','Lead nurturing'],datasets:[{data:[8200,5800,2800,1600],backgroundColor:['#1D9E75','#185FA5','#534AB7','#BA7517'],borderWidth:0,hoverOffset:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:tc,font:{size:11},boxWidth:10,padding:8}}},cutout:'62%'}});
+}
+</script>
+</body>
+</html>
